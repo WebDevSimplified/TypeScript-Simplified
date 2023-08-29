@@ -1,3 +1,5 @@
+import "./styles.css"
+
 type Todo = {
   id: string
   name: string
@@ -7,10 +9,9 @@ type Todo = {
 const form = document.querySelector<HTMLFormElement>("#new-todo-form")!
 const todoInput = document.querySelector<HTMLInputElement>("#todo-input")!
 const list = document.querySelector<HTMLUListElement>("#list")!
-const LOCAL_STORAGE_PREFIX = "ADVANCED_TODO_LIST"
-const TODOS_STORAGE_KEY = `${LOCAL_STORAGE_PREFIX}-todos`
+
 let todos = loadTodos()
-todos.forEach(renderTodo)
+todos.forEach(renderNewTodo)
 
 form.addEventListener("submit", e => {
   e.preventDefault()
@@ -18,35 +19,36 @@ form.addEventListener("submit", e => {
   const todoName = todoInput.value
   if (todoName === "") return
   const newTodo = {
+    id: crypto.randomUUID(),
     name: todoName,
     complete: false,
-    id: new Date().valueOf().toString(),
   }
+
   todos.push(newTodo)
-  renderTodo(newTodo)
+  renderNewTodo(newTodo)
   saveTodos()
   todoInput.value = ""
 })
 
-function renderTodo(todo: Todo) {
+function renderNewTodo(todo: Todo) {
   const listItem = document.createElement("li")
   listItem.classList.add("list-item")
 
   const label = document.createElement("label")
   label.classList.add("list-item-label")
 
-  const textElement = document.createElement("span")
-  textElement.classList.add("label-text")
-  textElement.innerText = todo.name
-
   const checkbox = document.createElement("input")
   checkbox.type = "checkbox"
-  checkbox.classList.add("label-input")
   checkbox.checked = todo.complete
+  checkbox.classList.add("label-input")
   checkbox.addEventListener("change", () => {
     todo.complete = checkbox.checked
     saveTodos()
   })
+
+  const textElement = document.createElement("span")
+  textElement.classList.add("label-text")
+  textElement.innerText = todo.name
 
   const deleteButton = document.createElement("button")
   deleteButton.classList.add("delete-btn")
@@ -59,14 +61,15 @@ function renderTodo(todo: Todo) {
 
   label.append(checkbox, textElement)
   listItem.append(label, deleteButton)
-  list.appendChild(listItem)
-}
-
-function loadTodos() {
-  const todosString = localStorage.getItem(TODOS_STORAGE_KEY)
-  return todosString == null ? [] : (JSON.parse(todosString) as Todo[])
+  list.append(listItem)
 }
 
 function saveTodos() {
-  localStorage.setItem(TODOS_STORAGE_KEY, JSON.stringify(todos))
+  localStorage.setItem("todos", JSON.stringify(todos))
+}
+
+function loadTodos() {
+  const value = localStorage.getItem("todos")
+  if (value == null) return []
+  return JSON.parse(value) as Todo[]
 }
