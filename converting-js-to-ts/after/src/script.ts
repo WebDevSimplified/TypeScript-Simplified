@@ -55,7 +55,7 @@ function tileToElement(tile: Tile) {
 boardElement.addEventListener("click", e => {
   if (
     !(e.target instanceof HTMLElement) ||
-    !e.target?.matches("[data-status]") ||
+    !e.target.matches("[data-status]") ||
     e.target.dataset.x == null ||
     e.target.dataset.y == null
   ) {
@@ -66,14 +66,13 @@ boardElement.addEventListener("click", e => {
     x: parseInt(e.target.dataset.x),
     y: parseInt(e.target.dataset.y),
   })
-
   render()
 })
 
 boardElement.addEventListener("contextmenu", e => {
   if (
     !(e.target instanceof HTMLElement) ||
-    !e.target?.matches("[data-status]") ||
+    !e.target.matches("[data-status]") ||
     e.target.dataset.x == null ||
     e.target.dataset.y == null
   ) {
